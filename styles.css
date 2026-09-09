@@ -202,7 +202,7 @@ select:focus, input[type="text"]:focus {
   box-sizing: border-box;
 }
 
-/* Player Container Viewport Scale */
+/* Dynamic Fit Screen Viewport Container */
 .player-container {
   width: 100%;
   max-width: 1280px;
@@ -350,6 +350,13 @@ select:focus, input[type="text"]:focus {
   padding-left: 36px;
 }
 
+.channel-count-display {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-top: 8px;
+  font-weight: 500;
+}
+
 .channel-directory {
   flex: 1;
   overflow-y: auto;
@@ -435,7 +442,7 @@ select:focus, input[type="text"]:focus {
 .channel-directory::-webkit-scrollbar-thumb { background: var(--bg-surface-elevated); border-radius: 4px; }
 .channel-directory::-webkit-scrollbar-thumb:hover { background: var(--text-tertiary); }
 
-/* Responsive Mobile Rules */
+/* Responsive Mobile Layout */
 @media (max-width: 1023px) {
   body {
     overflow-y: auto;
