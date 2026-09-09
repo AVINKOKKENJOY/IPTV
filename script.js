@@ -17,7 +17,7 @@ const DEFAULT_FALLBACK_CHANNEL = {
   url: "https://content.uplynk.com/channel/3324f2467c414329b3b0cc5838d41a37.m3u8"
 };
 
-// Standard ISO Language Mapping
+// ISO Language Codes Mapping
 const ISO_LANGUAGES = {
   eng: "English", en: "English",
   spa: "Spanish", es: "Spanish",
@@ -36,7 +36,7 @@ const ISO_LANGUAGES = {
   pol: "Polish", pl: "Polish"
 };
 
-// DOM References
+// DOM Elements
 const playlistSelect = document.getElementById('playlistSelect');
 const m3uUrlInput = document.getElementById('m3uUrlInput');
 const loadBtn = document.getElementById('loadBtn');
@@ -48,6 +48,7 @@ const currentChannelName = document.getElementById('currentChannelName');
 const prevBtn = document.getElementById('prevBtn');
 const stopBtn = document.getElementById('stopBtn');
 const nextBtn = document.getElementById('nextBtn');
+const channelCountEl = document.getElementById('channelCount');
 
 document.addEventListener('DOMContentLoaded', () => {
   plyrInstance = new Plyr(videoPlayer, {
@@ -75,6 +76,7 @@ loadBtn.addEventListener('click', () => {
   fetchAndParsePlaylist(customUrl || playlistSelect.value);
 });
 
+// Search across all channels in all categories
 searchInput.addEventListener('input', () => {
   clearTimeout(searchTimeout);
   searchTimeout = setTimeout(filterChannels, 150);
@@ -111,21 +113,21 @@ function navigateCategoryChannel(direction) {
   playChannel(nextChannel, targetElement, currentChannelIndex, true);
 }
 
-// Fetch and Parse Directory
+// Fetch and Parse M3U Directory
 async function fetchAndParsePlaylist(url) {
-  statusBar.textContent = 'Loading master channel directory...';
-  channelListEl.innerHTML = '<li style="padding: 20px; color: #6b7280; text-align: center; font-size: 0.85rem;">Displaying all channels...</li>';
+  statusBar.textContent = 'Loading channel directory...';
+  channelListEl.innerHTML = '<li style="padding: 20px; color: #6b7280; text-align: center; font-size: 0.85rem;">Displaying channels...</li>';
 
   try {
     const response = await fetch(url);
-    if (!response.ok) throw new Error('Network response was not ok');
+    if (!response.ok) throw new Error('Network error');
     const m3uText = await response.text();
     
     const urlLang = detectLanguageFromUrl(url);
     const parsedChannels = fastM3UParse(m3uText, urlLang);
     const unsortedChannels = [DEFAULT_FALLBACK_CHANNEL, ...parsedChannels];
 
-    // Alphabetical Sorting A to Z
+    // Alphabetical Sorting A-Z across all categories
     channels = unsortedChannels.sort((a, b) => 
       a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
     );
@@ -201,7 +203,6 @@ function capitalize(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Search across name, category, and language
 function filterChannels() {
   const query = searchInput.value.trim().toLowerCase();
   
@@ -215,7 +216,6 @@ function filterChannels() {
     );
   }
 
-  // Preserve Alphabetical Sorting across filtered results
   activeCategoryList.sort((a, b) => 
     a.name.localeCompare(b.name, undefined, { numeric: true, sensitivity: 'base' })
   );
@@ -225,6 +225,11 @@ function filterChannels() {
 
 function renderChannelList(list) {
   channelListEl.innerHTML = '';
+  
+  if (channelCountEl) {
+    channelCountEl.textContent = `Channels: ${list.length.toLocaleString()} of ${channels.length.toLocaleString()}`;
+  }
+
   if (list.length === 0) {
     channelListEl.innerHTML = '<li style="padding: 20px; color: #6b7280; text-align: center; font-size: 0.85rem;">No channels available</li>';
     return;
@@ -254,7 +259,7 @@ function renderChannelList(list) {
   channelListEl.appendChild(fragment);
 }
 
-// Immediate Channel Selection & Playback Execution
+// Channel Playback Handler
 function playChannel(channel, element, categoryIndex, isUserClicked = true) {
   if (skipTimer) {
     clearTimeout(skipTimer);
