@@ -52,6 +52,17 @@ body {
   align-items: center;
   gap: 10px;
   flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
+  transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.brand:hover {
+  opacity: 0.88;
+}
+
+.brand:active {
+  transform: scale(0.97);
 }
 
 .logo-icon {
@@ -202,7 +213,7 @@ select:focus, input[type="text"]:focus {
   box-sizing: border-box;
 }
 
-/* Dynamic Fit Screen Viewport Container */
+/* Container Viewport Scale */
 .player-container {
   width: 100%;
   max-width: 1280px;
